@@ -1,6 +1,10 @@
-name: Mob Drops
+name: Mobdrops
 version: '1.0-SNAPSHOT'
-main: me.involuting.mobDrops.MobDrops
+main: me.involuting.mobdrops.Mobdrops
 api-version: '1.21'
 load: STARTUP
 authors: [ involuting ]
+
+commands:
+  mobdrop:
+    permission: op

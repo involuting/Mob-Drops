@@ -55,6 +55,11 @@
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+
+        <repository>
+            <id>j4c0b3y-public</id>
+            <url>https://repo.j4c0b3y.net/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -64,6 +69,15 @@
             <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>net.j4c0b3y</groupId>
+            <artifactId>MenuAPI-core</artifactId>
+            <version>1.5.5</version>
+            <scope>compile</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

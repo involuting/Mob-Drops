@@ -1,0 +1,10 @@
+mobs:
+  BLAZE:
+    drops:
+      blaze_essence:
+        item:
+          material: BLAZE_POWDER
+          name: "§6Blaze Essence"
+          lore:
+            - "§7A rare drop from Blazes"
+        chance: 5.0
