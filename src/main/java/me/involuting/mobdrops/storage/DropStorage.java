@@ -3,6 +3,8 @@ package me.involuting.mobdrops.storage;
 import me.involuting.mobdrops.Mobdrops;
 import me.involuting.mobdrops.manager.DropManager;
 import me.involuting.mobdrops.model.Drop;
+
+import me.involuting.mobdrops.model.rarity.Rarity;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 
@@ -42,10 +44,15 @@ public class DropStorage {
 
                 String materialName = (String) map.get("material");
                 String name = (String) map.get("name");
-                List<String> lore = (List<String>) map.get("lore");
+
+                List<String> lore = map.get("lore") instanceof List<?> rawList
+                        ? rawList.stream().map(Object::toString).toList()
+                        : new ArrayList<>();
 
                 Number amountObj = (Number) map.get("amount");
                 Number chanceObj = (Number) map.get("chance");
+
+                String rarityStr = (String) map.get("rarity");
 
                 if (materialName == null || amountObj == null || chanceObj == null) continue;
 
@@ -55,9 +62,13 @@ public class DropStorage {
                     double chance = chanceObj.doubleValue();
                     int amount = amountObj.intValue();
 
+                    Rarity rarity = rarityStr != null
+                            ? Rarity.valueOf(rarityStr)
+                            : Rarity.COMMON;
+
                     manager.addDropInternal(
                             type,
-                            new Drop(material, name, lore, amount, chance)
+                            new Drop(material, name, lore, amount, chance, rarity)
                     );
 
                 } catch (Exception ignored) {}
@@ -65,10 +76,8 @@ public class DropStorage {
         }
     }
 
-
     public void save(DropManager manager) {
 
-        // ❌ DO NOT run async (Bukkit config is NOT thread-safe)
         FileConfiguration config = plugin.getConfig();
         config.set("mobs", null);
 
@@ -87,6 +96,7 @@ public class DropStorage {
                 map.put("lore", drop.getLore());
                 map.put("amount", drop.getAmount());
                 map.put("chance", drop.getChance());
+                map.put("rarity", drop.getRarity().name());
 
                 list.add(map);
             }

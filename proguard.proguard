@@ -1,0 +1,53 @@
+# =========================================================
+# MAIN PLUGIN
+# =========================================================
+-keep class * extends org.bukkit.plugin.java.JavaPlugin {
+    public <init>();
+    public void onEnable();
+    public void onDisable();
+}
+
+# =========================================================
+# YOUR CODE
+# =========================================================
+-keep class me.involuting.mobdrops.command.** { *; }
+-keep class me.involuting.mobdrops.menu.** { *; }
+-keep class me.involuting.mobdrops.manager.** { *; }
+-keep class me.involuting.mobdrops.storage.** { *; }
+-keep class me.involuting.mobdrops.model.** { *; }
+
+# LISTENERS (FIXED)
+-keep class me.involuting.mobdrops.listener.** {
+    @org.bukkit.event.EventHandler *;
+}
+
+# =========================================================
+# MENU API
+# =========================================================
+-keep class net.j4c0b3y.** { *; }
+
+# =========================================================
+# BUKKIT SAFETY
+# =========================================================
+-dontwarn org.bukkit.**
+-dontwarn net.md_5.bungee.**
+
+# =========================================================
+# METADATA
+# =========================================================
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
+
+# =========================================================
+# OBFUSCATION
+# =========================================================
+-dontoptimize
+-dontshrink
+-dontpreverify
+
+# =========================================================
+# DEBUG CLEANUP
+# =========================================================
+-renamesourcefileattribute SourceFile

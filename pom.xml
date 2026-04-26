@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.involuting</groupId>
@@ -17,39 +18,110 @@
     </properties>
 
     <build>
-        <defaultGoal>clean package</defaultGoal>
+
+
+        <finalName>MobDrops</finalName>
+
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
+
+            <!-- ========================= -->
+            <!-- COMPILER -->
+            <!-- ========================= -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.5.3</version>
+
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+
+                        <configuration>
+                            <finalName>MobDrops</finalName>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- ========================= -->
+            <!-- PROGUARD (STEP 2) -->
+            <!-- ========================= -->
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.7.0</version>
+
+                <executions>
+                    <execution>
+                        <id>obfuscate</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <proguardVersion>7.4.0</proguardVersion>
+
+                    <!-- HARD FIXED PATHS (NO MAVEN VARIABLES) -->
+                    <injar>${project.build.directory}/MobDrops-shaded.jar</injar>
+                    <outjar>${project.build.directory}/MobDrops-obf.jar</outjar>
+
+                    <options>
+
+                        <!-- SAFE MODE -->
+                        <option>-dontoptimize</option>
+                        <option>-dontshrink</option>
+                        <option>-dontpreverify</option>
+
+                        <!-- MAIN PLUGIN CLASS -->
+                        <option>-keep public class * extends org.bukkit.plugin.java.JavaPlugin { *; }</option>
+
+                        <!-- YOUR CODE -->
+                        <option>-keep class me.involuting.mobdrops.** { *; }</option>
+
+                        <!-- MENU API -->
+                        <option>-keep class net.j4c0b3y.** { *; }</option>
+
+                        <!-- EVENTS -->
+                        <option>-keepclassmembers class * {
+                            @org.bukkit.event.EventHandler *;
+                            }</option>
+
+                        <!-- SAFETY -->
+                        <option>-dontwarn org.bukkit.**</option>
+                        <option>-dontwarn net.md_5.bungee.**</option>
+
+                        <!-- METADATA -->
+                        <option>-keepattributes *Annotation*</option>
+                        <option>-keepattributes Signature</option>
+                        <option>-keepattributes InnerClasses</option>
+                        <option>-keepattributes EnclosingMethod</option>
+
+                    </options>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+            </plugin>
+
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
     </build>
 
+    <!-- ========================= -->
+    <!-- REPOSITORIES -->
+    <!-- ========================= -->
     <repositories>
         <repository>
             <id>papermc-repo</id>
@@ -62,7 +134,11 @@
         </repository>
     </repositories>
 
+    <!-- ========================= -->
+    <!-- DEPENDENCIES -->
+    <!-- ========================= -->
     <dependencies>
+
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
@@ -77,6 +153,11 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.guardsquare</groupId>
+            <artifactId>proguard-base</artifactId>
+            <version>7.7.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -84,5 +165,7 @@
             <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
+
 </project>

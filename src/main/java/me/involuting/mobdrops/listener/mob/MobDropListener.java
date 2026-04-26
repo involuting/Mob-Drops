@@ -2,7 +2,10 @@ package me.involuting.mobdrops.listener.mob;
 
 import me.involuting.mobdrops.Mobdrops;
 import me.involuting.mobdrops.model.Drop;
+import me.involuting.mobdrops.model.rarity.effect.RarityEffect;
+import me.involuting.mobdrops.model.weight.WeightedLoot;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -23,15 +26,22 @@ public class MobDropListener implements Listener {
                 .getDropManager()
                 .getDrops(type);
 
-        if (drops.isEmpty()) return;
+        if (drops == null || drops.isEmpty()) return;
 
+        Drop chosen = WeightedLoot.pick(drops);
 
+        if (chosen == null) return;
 
-        for (Drop drop : drops) {
+        event.getDrops().add(chosen.buildItem());
 
-            if (random.nextDouble(100) <= drop.getChance()) {
-                event.getDrops().add(drop.buildItem());
-            }
+        Player killer = event.getEntity().getKiller();
+
+        if (killer != null) {
+            RarityEffect.play(
+                    chosen.getRarity(),
+                    event.getEntity().getLocation(),
+                    killer
+            );
         }
     }
 }

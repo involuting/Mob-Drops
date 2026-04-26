@@ -1,9 +1,16 @@
 package me.involuting.mobdrops.command;
 
+import me.involuting.mobdrops.menu.DropPreviewMenu;
 import me.involuting.mobdrops.menu.SelectMobMenu;
+import me.involuting.mobdrops.manager.DropManager;
 import org.bukkit.command.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class MobdropCommand implements CommandExecutor {
 
@@ -12,7 +19,7 @@ public class MobdropCommand implements CommandExecutor {
         REMOVE
     }
 
-    private static Mode mode = Mode.ADD;
+    private static final Map<UUID, Mode> modes = new HashMap<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender,
@@ -37,16 +44,73 @@ public class MobdropCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
 
+
             case "add" -> {
-                mode = Mode.ADD;
+                modes.put(player.getUniqueId(), Mode.ADD);
                 new SelectMobMenu(player).open();
-                player.sendMessage("§aSelect a mob to add an drop to.");
+                player.sendMessage("§aSelect a mob to add a drop.");
             }
 
+
             case "remove" -> {
-                mode = Mode.REMOVE;
+                modes.put(player.getUniqueId(), Mode.REMOVE);
                 new SelectMobMenu(player).open();
-                player.sendMessage("§cSelect a mob to remove an drop.");
+                player.sendMessage("§cSelect a mob to remove a drop.");
+            }
+
+
+            case "preview" -> {
+
+                if (args.length < 2) {
+                    player.sendMessage("§cUsage: /mobdrop preview <mob>");
+                    return true;
+                }
+
+                try {
+                    EntityType type = EntityType.valueOf(args[1].toUpperCase());
+
+                    new DropPreviewMenu(player, type).open();
+
+                } catch (Exception e) {
+                    player.sendMessage("§cInvalid mob type.");
+                }
+            }
+
+
+            case "list" -> {
+
+                if (args.length < 2) {
+                    player.sendMessage("§cUsage: /mobdrop list <mob>");
+                    return true;
+                }
+
+                try {
+                    EntityType type = EntityType.valueOf(args[1].toUpperCase());
+
+                    var drops = me.involuting.mobdrops.Mobdrops.getInstance()
+                            .getDropManager()
+                            .getDrops(type);
+
+                    player.sendMessage("§eDrops for §a" + type.name() + "§e:");
+
+                    if (drops.isEmpty()) {
+                        player.sendMessage("§cNo drops found.");
+                        return true;
+                    }
+
+                    drops.forEach(drop ->
+                            player.sendMessage("§7- §f" + drop.getMaterial().name()
+                                    + " §7(" + drop.getChance() + "%)")
+                    );
+
+                } catch (Exception e) {
+                    player.sendMessage("§cInvalid mob type.");
+                }
+            }
+
+            case "reload" -> {
+                me.involuting.mobdrops.Mobdrops.getInstance().reloadConfig();
+                player.sendMessage("§aMobdrops reloaded.");
             }
 
             default -> sendUsage(player);
@@ -55,15 +119,18 @@ public class MobdropCommand implements CommandExecutor {
         return true;
     }
 
-    public static Mode getMode() {
-        return mode;
+    public static Mode getMode(Player player) {
+        return modes.getOrDefault(player.getUniqueId(), Mode.ADD);
     }
 
     private void sendUsage(Player player) {
         player.sendMessage(" ");
-        player.sendMessage("§eMob Drops:");
-        player.sendMessage("§a/mobdrop add §7- Add a new drop");
-        player.sendMessage("§c/mobdrop remove §7- Remove a drop");
+        player.sendMessage("§eMobdrops Commands:");
+        player.sendMessage("§a/mobdrop add");
+        player.sendMessage("§c/mobdrop remove");
+        player.sendMessage("§e/mobdrop preview (mob)");
+        player.sendMessage("§e/mobdrop list (mob)");
+        player.sendMessage("§e/mobdrop reload");
         player.sendMessage(" ");
     }
 }
