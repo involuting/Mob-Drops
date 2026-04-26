@@ -8,7 +8,6 @@ import net.j4c0b3y.api.menu.layer.impl.BackgroundLayer;
 import net.j4c0b3y.api.menu.layer.impl.ForegroundLayer;
 import net.j4c0b3y.api.menu.pagination.PaginatedMenu;
 import net.j4c0b3y.api.menu.pagination.PaginationSlot;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -38,7 +37,7 @@ public class DropPreviewMenu extends PaginatedMenu {
 
         List<Drop> drops = Mobdrops.getInstance()
                 .getDropManager()
-                .getDrops(type);
+                .getGlobalDrops(type);
 
         return drops.stream()
                 .map(DropPreviewButton::new)

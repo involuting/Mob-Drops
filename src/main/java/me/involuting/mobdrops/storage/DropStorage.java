@@ -3,7 +3,6 @@ package me.involuting.mobdrops.storage;
 import me.involuting.mobdrops.Mobdrops;
 import me.involuting.mobdrops.manager.DropManager;
 import me.involuting.mobdrops.model.Drop;
-
 import me.involuting.mobdrops.model.rarity.Rarity;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -22,6 +21,9 @@ public class DropStorage {
     public void load(DropManager manager) {
 
         FileConfiguration config = plugin.getConfig();
+
+
+        manager.clear();
 
         if (!config.contains("mobs")) return;
 
@@ -66,7 +68,7 @@ public class DropStorage {
                             ? Rarity.valueOf(rarityStr)
                             : Rarity.COMMON;
 
-                    manager.addDropInternal(
+                    manager.addDrop(
                             type,
                             new Drop(material, name, lore, amount, chance, rarity)
                     );
@@ -76,12 +78,14 @@ public class DropStorage {
         }
     }
 
+
     public void save(DropManager manager) {
 
         FileConfiguration config = plugin.getConfig();
+
         config.set("mobs", null);
 
-        for (Map.Entry<EntityType, List<Drop>> entry : manager.getAll().entrySet()) {
+        for (Map.Entry<EntityType, List<Drop>> entry : manager.getAllGlobal().entrySet()) {
 
             String mob = entry.getKey().name();
 
@@ -105,5 +109,11 @@ public class DropStorage {
         }
 
         plugin.saveConfig();
+    }
+
+
+    public void reload(DropManager manager) {
+        plugin.reloadConfig();
+        load(manager);
     }
 }

@@ -28,7 +28,7 @@ public class ChanceEditorMenu extends Menu {
     }
 
     public ChanceEditorMenu(Player player, EntityType type, double chance) {
-        super("Chance Editor", MenuSize.SIX, player);
+        super("Chance Editor", MenuSize.THREE, player);
         this.type = type;
         this.chance = chance;
     }

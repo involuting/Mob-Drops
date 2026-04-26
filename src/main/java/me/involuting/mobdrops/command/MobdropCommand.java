@@ -2,7 +2,8 @@ package me.involuting.mobdrops.command;
 
 import me.involuting.mobdrops.menu.DropPreviewMenu;
 import me.involuting.mobdrops.menu.SelectMobMenu;
-import me.involuting.mobdrops.manager.DropManager;
+import me.involuting.mobdrops.Mobdrops;
+import me.involuting.mobdrops.mob.category.MobCategory;
 import org.bukkit.command.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -20,6 +21,8 @@ public class MobdropCommand implements CommandExecutor {
     }
 
     private static final Map<UUID, Mode> modes = new HashMap<>();
+
+    private final Mobdrops plugin = Mobdrops.getInstance();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender,
@@ -44,20 +47,17 @@ public class MobdropCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
 
-
             case "add" -> {
                 modes.put(player.getUniqueId(), Mode.ADD);
-                new SelectMobMenu(player).open();
+                new SelectMobMenu(player, MobCategory.ALL, "").open();
                 player.sendMessage("§aSelect a mob to add a drop.");
             }
 
-
             case "remove" -> {
                 modes.put(player.getUniqueId(), Mode.REMOVE);
-                new SelectMobMenu(player).open();
+                new SelectMobMenu(player, null, "").open();
                 player.sendMessage("§cSelect a mob to remove a drop.");
             }
-
 
             case "preview" -> {
 
@@ -68,14 +68,11 @@ public class MobdropCommand implements CommandExecutor {
 
                 try {
                     EntityType type = EntityType.valueOf(args[1].toUpperCase());
-
                     new DropPreviewMenu(player, type).open();
-
                 } catch (Exception e) {
                     player.sendMessage("§cInvalid mob type.");
                 }
             }
-
 
             case "list" -> {
 
@@ -87,11 +84,12 @@ public class MobdropCommand implements CommandExecutor {
                 try {
                     EntityType type = EntityType.valueOf(args[1].toUpperCase());
 
-                    var drops = me.involuting.mobdrops.Mobdrops.getInstance()
-                            .getDropManager()
-                            .getDrops(type);
+                    var world = player.getWorld();
 
-                    player.sendMessage("§eDrops for §a" + type.name() + "§e:");
+                    var drops = plugin.getDropManager()
+                            .getGlobalDrops(type);
+
+                    player.sendMessage("§eDrops for §a" + type.name() + " §ein §b" + world.getName() + "§e:");
 
                     if (drops.isEmpty()) {
                         player.sendMessage("§cNo drops found.");
@@ -109,7 +107,7 @@ public class MobdropCommand implements CommandExecutor {
             }
 
             case "reload" -> {
-                me.involuting.mobdrops.Mobdrops.getInstance().reloadConfig();
+                plugin.reloadConfig();
                 player.sendMessage("§aMobdrops reloaded.");
             }
 

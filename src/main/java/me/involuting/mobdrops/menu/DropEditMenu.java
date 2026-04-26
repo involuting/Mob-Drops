@@ -25,7 +25,7 @@ public class DropEditMenu extends PaginatedMenu {
     private final Drop drop;
 
     public DropEditMenu(Player player, EntityType type, Drop drop) {
-        super("Edit Drop", MenuSize.SIX, player);
+        super("Edit Drop", MenuSize.THREE, player);
         this.type = type;
         this.drop = drop;
     }
@@ -65,7 +65,7 @@ public class DropEditMenu extends PaginatedMenu {
 
                 ChatInputSession.start(player, input -> {
                     drop.setName(input.replace("&", "§"));
-                    Mobdrops.getInstance().getDropManager().save();
+                    Mobdrops.getInstance().getDropStorage().save(Mobdrops.getInstance().getDropManager());
                     new DropEditMenu(player, type, drop).open();
                 });
 
@@ -96,7 +96,7 @@ public class DropEditMenu extends PaginatedMenu {
 
                     drop.setLore(lore);
 
-                    Mobdrops.getInstance().getDropManager().save();
+                    Mobdrops.getInstance().getDropStorage().save(Mobdrops.getInstance().getDropManager());
                     new DropEditMenu(player, type, drop).open();
                 });
 
@@ -125,7 +125,7 @@ public class DropEditMenu extends PaginatedMenu {
                         double chance = Double.parseDouble(input);
                         drop.setChance(chance);
 
-                        Mobdrops.getInstance().getDropManager().save();
+                        Mobdrops.getInstance().getDropStorage().save(Mobdrops.getInstance().getDropManager());
 
                         new DropEditMenu(player, type, drop).open();
 

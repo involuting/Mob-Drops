@@ -5,9 +5,14 @@ import me.involuting.mobdrops.command.MobdropCommand;
 import me.involuting.mobdrops.listener.mob.MobDropListener;
 import me.involuting.mobdrops.listener.player.PlayerListener;
 import me.involuting.mobdrops.manager.DropManager;
+import me.involuting.mobdrops.menu.MobSearchSession;
+import me.involuting.mobdrops.mob.category.MobCategory;
+import me.involuting.mobdrops.model.Drop;
+import me.involuting.mobdrops.model.service.DropService;
 import me.involuting.mobdrops.storage.DropStorage;
 import net.j4c0b3y.api.menu.MenuHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,6 +25,8 @@ public final class Mobdrops extends JavaPlugin {
     private DropManager dropManager;
     private DropStorage dropStorage;
     private MenuHandler menuHandler;
+    private DropService dropService;
+    private MobCategory mobCategory;
 
     @Override
     public void onEnable() {
@@ -32,9 +39,11 @@ public final class Mobdrops extends JavaPlugin {
 
         this.dropManager = new DropManager();
         this.dropStorage = new DropStorage(this);
+        this.dropService = new DropService(dropManager);
 
-        Bukkit.getPluginManager().registerEvents(new MobDropListener(), this);
+        Bukkit.getPluginManager().registerEvents(new MobDropListener(dropService), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new MobSearchSession(), this);
 
         dropStorage.load(dropManager);
 

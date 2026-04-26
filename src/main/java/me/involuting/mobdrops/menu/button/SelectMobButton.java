@@ -1,9 +1,11 @@
 package me.involuting.mobdrops.menu.button;
 
 import me.involuting.mobdrops.menu.MobEditorMenu;
+import me.involuting.mobdrops.mob.MobRegistry;
+import me.involuting.mobdrops.mob.category.MobCategory;
 import net.j4c0b3y.api.menu.button.Button;
 import net.j4c0b3y.api.menu.button.ButtonClick;
-import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,39 +22,52 @@ public class SelectMobButton extends Button {
 
     @Override
     public void onClick(ButtonClick click) {
-
         new MobEditorMenu(click.getMenu().getPlayer(), type).open();
     }
 
     @Override
     public ItemStack getIcon() {
 
-        Material material;
-
-        switch (type) {
-            case BLAZE -> material = Material.BLAZE_POWDER;
-            case ZOMBIE -> material = Material.ZOMBIE_HEAD;
-            case SKELETON -> material = Material.SKELETON_SKULL;
-            case CREEPER -> material = Material.CREEPER_HEAD;
-            case SPIDER -> material = Material.SPIDER_EYE;
-            case ENDERMAN -> material = Material.ENDER_PEARL;
-            case IRON_GOLEM -> material = Material.IRON_INGOT;
-            case VILLAGER -> material = Material.EMERALD;
-            default -> material = Material.EGG;
-        }
-
-        ItemStack item = new ItemStack(material);
+        ItemStack item = MobRegistry.getIcon(type);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName("§e" + type.name());
+        if (meta == null) return item;
 
+        MobCategory category = MobRegistry.getCategory(type);
+
+       
+        meta.setDisplayName(category.getColor() + format(type));
+
+  
         meta.setLore(Arrays.asList(
-                "§7Click to select",
-                "§7this mob for drops"
+                "§8Category: " + category.getDisplay(),
+                "",
+                "§7Click to select this mob",
+                "§7for drop configuration"
         ));
 
         item.setItemMeta(meta);
 
+        
+        if (category == MobCategory.Bosses) {
+            item = addGlow(item);
+        }
+
         return item;
+    }
+
+    private ItemStack addGlow(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+        meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private String format(EntityType type) {
+        String name = type.name().toLowerCase().replace("_", " ");
+        return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 }
