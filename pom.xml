@@ -24,9 +24,6 @@
 
         <plugins>
 
-            <!-- ========================= -->
-            <!-- COMPILER -->
-            <!-- ========================= -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -48,9 +45,7 @@
                 </executions>
             </plugin>
 
-            <!-- ========================= -->
-            <!-- PROGUARD (STEP 2) -->
-            <!-- ========================= -->
+
             <plugin>
                 <groupId>com.github.wvengen</groupId>
                 <artifactId>proguard-maven-plugin</artifactId>
@@ -119,9 +114,7 @@
         </plugins>
     </build>
 
-    <!-- ========================= -->
-    <!-- REPOSITORIES -->
-    <!-- ========================= -->
+
     <repositories>
         <repository>
             <id>papermc-repo</id>
@@ -134,9 +127,6 @@
         </repository>
     </repositories>
 
-    <!-- ========================= -->
-    <!-- DEPENDENCIES -->
-    <!-- ========================= -->
     <dependencies>
 
         <dependency>
